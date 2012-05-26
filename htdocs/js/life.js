@@ -4,7 +4,7 @@ var Life =
 
   life : function()
   {
-    var obj = {    
+    var self = {    
 
       init : function() {
         var self = this;
@@ -50,9 +50,11 @@ var Life =
       },
 
       nothing : null
-    };
 
-    return obj.init.apply( obj, arguments );
+    };
+    
+    return self.init.apply( self, arguments );
+
   },
 
   // ----- Free functions ------
