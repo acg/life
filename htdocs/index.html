@@ -25,10 +25,20 @@
   <div class="grid"></div>
   <form class="controls">
     <ul>
-      <li class="generation"> Generation = <em></em> </li>
-      <li> <input type="button" name="play" value="play" /> </li>
-      <li> <input type="button" name="reset" value="reset" /> </li>
-      <li> <input type="button" name="random" value="random" /> </li>
+      <li class="generation">Generation: <em></em> </li>
+      <li class="play"> <input type="button" name="play" value="play" /> </li>
+      <li class="reset"> <input type="button" name="reset" value="reset" /> </li>
+      <li class="random"> <input type="button" name="random" value="random" /> </li>
+      <li class="size">
+        <label for="cx">Size: </label>
+        <input type="text" name="cx" value="" />
+        <span>x</span>
+        <input type="text" name="cy" value="" />
+      </li>
+      <li class="wrap">
+        <label for="wrap">Wrap: </label>
+        <input type="checkbox" name="wrap" />
+      </li>
     </ul>
   </form>
 </div>

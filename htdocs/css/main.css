@@ -59,6 +59,11 @@ h1 {
   padding: 0px 12px;
 }
 
+.controls input[type="text"] {
+  padding: 2px 4px;
+  width: 32px;
+}
+
 .controls li {
   padding: 4px 0px;
 }

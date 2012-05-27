@@ -32,8 +32,8 @@ var Life =
         return this;
       },
 
-      next : function() {
-        this.grid = Life.next( this.grid, this.cx, this.cy );
+      next : function( wrap ) {
+        this.grid = Life.next( this.grid, this.cx, this.cy, wrap );
         return this;
       },
 

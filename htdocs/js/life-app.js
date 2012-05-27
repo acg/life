@@ -12,6 +12,9 @@ function LifeApp()
       tile_cy : 24,
       // Refresh delay between generations
       delay : 200,
+      // Wrap at edges of grid? (eg toroidal surface)
+      wrap : 1,
+      // Avoid trailing js comma ;)
       nothing : null
     },
 
@@ -37,6 +40,8 @@ function LifeApp()
       var $play = $( 'input[name="play"]', $controls );
       var $reset = $( 'input[name="reset"]', $controls );
       var $random = $( 'input[name="random"]', $controls );
+      var $sizes = $( '.size input[type="text"]', $controls );
+      var $wrap = $( 'input[name="wrap"]', $controls );
 
       $play.bind( 'click', function() {
         self.playing ^= 1;
@@ -59,6 +64,14 @@ function LifeApp()
       var $cells = $( 'ul > li > ol > li', $grid );
       $cells.bind( 'click mouseenter', { self : self }, self.mouse );
 
+      $sizes.bind( 'change', function() {
+        // TODO 
+      } );
+
+      $wrap.bind( 'change', function() {
+        self.options.wrap = $wrap.attr("checked") ? 1 : 0;
+      } );
+
       self.timer = setInterval( function() { self.tick() }, self.options.delay );
 
       return self;
@@ -77,7 +90,7 @@ function LifeApp()
       if (!self.playing)
         return;
       self.generation += 1;
-      self.life.next();
+      self.life.next( self.options.wrap );
       self.draw();
     },
 
@@ -124,8 +137,11 @@ function LifeApp()
       var self = this;
       var $grid = $( '.grid', self.$elem );
       var $controls = $( '.controls', self.$elem );
-      var $play = $( 'input[name="play"]', $controls );
       var $generation = $( '.generation em', $controls );
+      var $play = $( 'input[name="play"]', $controls );
+      var $cx = $( '.size input[name="cx"]', $controls );
+      var $cy = $( '.size input[name="cy"]', $controls );
+      var $wrap = $( 'input[name="wrap"]', $controls );
 
       var grid = self.life.grid;
       var cx = self.options.cx;
@@ -145,8 +161,11 @@ function LifeApp()
         }
       }
 
-      $play.val( self.playing ? 'pause' : 'play' );
       $generation.html( self.generation );
+      $play.val( self.playing ? 'pause' : 'play' );
+      $cx.val( cx );
+      $cy.val( cy );
+      $wrap.attr( 'checked', self.options.wrap );
     },
 
     nothing : null
