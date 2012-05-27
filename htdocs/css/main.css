@@ -18,6 +18,7 @@ h1 {
   top: 72px;
   left: 50%;
   margin-left: -25%;
+  background: white;
 }
 
 .grid li li {
@@ -37,10 +38,6 @@ h1 {
 
 .grid .live {
   background : #1b1;
-}
-
-.grid .dead {
-  background : white;
 }
 
 .controls {
