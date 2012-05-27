@@ -27,6 +27,11 @@ var Life =
         return this;
       },
 
+      random : function() {
+        this.grid = Life.random( this.cx, this.cy );
+        return this;
+      },
+
       next : function() {
         this.grid = Life.next( this.grid, this.cx, this.cy );
         return this;
@@ -76,9 +81,29 @@ var Life =
   },
 
 
+  // Return a randomized grid.
+
+  random : function( cx, cy ) {
+
+    var grid = [];
+
+    for (x=0; x<cx; x++) {
+      grid[x] = [];
+      for (y=0; y<cy; y++) {
+        grid[x][y] = (Math.random() < 0.5) ? 0 : 1;
+      }
+    }
+
+    return grid;
+  },
+
+
   // Compute next iteration.
 
-  next : function( grid, cx, cy ) {
+  next : function( grid, cx, cy, wrap ) {
+
+    if (wrap == null)
+      wrap = true;
 
     var neighbors = [
       [ -1, -1  ],
@@ -103,6 +128,12 @@ var Life =
         {
           var nx = x + neighbors[d][0];
           var ny = y + neighbors[d][1];
+          if (wrap) {
+            if (nx < 0) nx += cx;
+            if (ny < 0) ny += cy;
+            nx = nx % cx;
+            ny = ny % cy;
+          }
           if (nx < 0 || nx >= cx || ny < 0 || ny >= cy)
             continue;
           livecount += grid[nx][ny];

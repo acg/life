@@ -36,9 +36,25 @@ function LifeApp()
       var $controls = $( '.controls', self.$elem );
       var $play = $( 'input[name="play"]', $controls );
       var $reset = $( 'input[name="reset"]', $controls );
+      var $random = $( 'input[name="random"]', $controls );
 
-      $play.bind( 'click', function() { self.playing ^= 1; self.draw() } );
-      $reset.bind( 'click', function() { self.life.clear(); self.generation = 0; self.draw() } );
+      $play.bind( 'click', function() {
+        self.playing ^= 1;
+        self.draw();
+      } );
+
+      $reset.bind( 'click', function() {
+        self.playing = 0;
+        self.life.clear();
+        self.generation = 0;
+        self.draw();
+      } );
+
+      $random.bind( 'click', function() {
+        self.playing = 0;
+        self.life.random();
+        self.draw();
+      } );
 
       var $cells = $( 'ul > li > ol > li', $grid );
       $cells.bind( 'click mouseenter', { self : self }, self.mouse );
