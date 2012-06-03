@@ -32,6 +32,14 @@ var Life =
         return this;
       },
 
+      resize : function( cx, cy ) {
+        var newgrid = Life.clear( cx, cy );
+        this.grid = Life.copy( this.grid, this.cx, this.cy, newgrid, cx, cy, 0, 0 );
+        this.cx = cx;
+        this.cy = cy;
+        return this;
+      },
+
       next : function( wrap ) {
         this.grid = Life.next( this.grid, this.cx, this.cy, wrap );
         return this;
@@ -61,6 +69,7 @@ var Life =
     return self.init.apply( self, arguments );
 
   },
+
 
   // ----- Free functions ------
 
@@ -95,6 +104,18 @@ var Life =
     }
 
     return grid;
+  },
+
+
+  // Copy a grid onto another grid, with some offset.
+
+  copy : function( src, src_cx, src_cy, dst, dst_cx, dst_cy, dst_x, dst_y ) {
+
+    for (x=0; x<src_cx && dst_x+x<dst_cx; x++)
+      for (y=0; y<src_cy && dst_y+y<dst_cy; y++)
+        dst[dst_x + x][dst_y + y] = src[x][y];
+
+    return dst;
   },
 
 

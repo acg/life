@@ -5,11 +5,9 @@ function LifeApp()
 
     defaults : {
       // Size of grid
-      cx : 30,
-      cy : 30,
+      cx : 30, cy : 30,
       // Size of tile element in pixels
-      tile_cx : 24,
-      tile_cy : 24,
+      tile_cx : 24, tile_cy : 24,
       // Refresh delay between generations
       delay : 200,
       // Wrap at edges of grid? (eg toroidal surface)
@@ -43,34 +41,54 @@ function LifeApp()
       var $sizes = $( '.size input[type="text"]', $controls );
       var $wrap = $( 'input[name="wrap"]', $controls );
 
-      $play.bind( 'click', function() {
+      // Play button
+
+      $play.bind( 'click.life', function() {
         self.playing ^= 1;
         self.draw();
       } );
 
-      $reset.bind( 'click', function() {
+      // Reset button 
+
+      $reset.bind( 'click.life', function() {
         self.playing = 0;
         self.life.clear();
         self.generation = 0;
         self.draw();
       } );
 
-      $random.bind( 'click', function() {
+      // Randomize button
+
+      $random.bind( 'click.life', function() {
         self.playing = 0;
         self.life.random();
         self.draw();
       } );
 
-      var $cells = $( 'ul > li > ol > li', $grid );
-      $cells.bind( 'click mouseenter', { self : self }, self.mouse );
+      // Mouse events over the grid
 
-      $sizes.bind( 'change', function() {
-        // TODO 
+      var $cells = $( 'ul > li > ol > li', $grid );
+      $cells.bind( 'click.life mouseenter.life', { self : self }, self.mouse );
+
+      // Resizing the grid
+
+      $sizes.bind( 'change.life', function() {
+        self.options.cx = parseInt( $( $sizes[0] ).val() );
+        self.options.cy = parseInt( $( $sizes[1] ).val() );
+        self.life.resize( self.options.cx, self.options.cy );
+        self.uninstall();
+        self.setup();
+        self.draw();
+        self.install();
       } );
 
-      $wrap.bind( 'change', function() {
+      // Toggling wrapping in neighbor calculation.
+
+      $wrap.bind( 'change.life', function() {
         self.options.wrap = $wrap.attr("checked") ? 1 : 0;
       } );
+
+      // The tick handler.
 
       self.timer = setInterval( function() { self.tick() }, self.options.delay );
 
@@ -80,7 +98,12 @@ function LifeApp()
     uninstall : function()
     {
       var self = this;
-      // TODO undo the above event handling stuff
+
+      $( '*', self.$elem ).unbind( '.life' );
+
+      if (self.timer) clearInterval( self.timer );
+      self.timer = null;
+
       return self;
     },
 
