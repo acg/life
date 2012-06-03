@@ -31,14 +31,21 @@ function LifeApp()
 
     install : function()
     {
+      return this
+        .install_events()
+        .install_timer();
+    },
+
+    install_events : function()
+    {
       var self = this;
-      var grid = self.life.grid;
       var $grid = $( '.grid', self.$elem );
       var $controls = $( '.controls', self.$elem );
       var $play = $( 'input[name="play"]', $controls );
       var $reset = $( 'input[name="reset"]', $controls );
       var $random = $( 'input[name="random"]', $controls );
       var $sizes = $( '.size input[type="text"]', $controls );
+      var $delay = $( 'input[name="delay"]', $controls );
       var $wrap = $( 'input[name="wrap"]', $controls );
 
       // Play button
@@ -88,23 +95,43 @@ function LifeApp()
         self.options.wrap = $wrap.attr("checked") ? 1 : 0;
       } );
 
+      // Change delay between ticks
+
+      $delay.bind( 'change.life', function() {
+        self.options.delay = parseInt( $delay.val() );
+        self.uninstall_timer();
+        self.install_timer();
+      } );
+
+      return self;
+    },
+
+    install_timer : function()
+    {
+      var self = this;
       // The tick handler.
-
       self.timer = setInterval( function() { self.tick() }, self.options.delay );
-
       return self;
     },
 
     uninstall : function()
     {
-      var self = this;
+      return this
+        .uninstall_events()
+        .uninstall_timer();
+    },
 
-      $( '*', self.$elem ).unbind( '.life' );
+    uninstall_events : function()
+    {
+      $( '*', this.$elem ).unbind( '.life' );
+      return this;
+    },
 
-      if (self.timer) clearInterval( self.timer );
-      self.timer = null;
-
-      return self;
+    uninstall_timer : function()
+    {
+      if (this.timer) clearInterval( this.timer );
+      this.timer = null;
+      return this;
     },
 
     tick : function()
@@ -164,6 +191,7 @@ function LifeApp()
       var $play = $( 'input[name="play"]', $controls );
       var $cx = $( '.size input[name="cx"]', $controls );
       var $cy = $( '.size input[name="cy"]', $controls );
+      var $delay = $( 'input[name="delay"]', $controls );
       var $wrap = $( 'input[name="wrap"]', $controls );
 
       var grid = self.life.grid;
@@ -188,6 +216,7 @@ function LifeApp()
       $play.val( self.playing ? 'pause' : 'play' );
       $cx.val( cx );
       $cy.val( cy );
+      $delay.val( self.options.delay );
       $wrap.attr( 'checked', self.options.wrap );
     },
 
