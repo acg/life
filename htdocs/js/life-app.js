@@ -214,10 +214,10 @@ function LifeApp()
 
       $generation.html( self.generation );
       $play.val( self.playing ? 'pause' : 'play' );
-      $cx.val( cx );
-      $cy.val( cy );
-      $delay.val( self.options.delay );
-      $wrap.attr( 'checked', self.options.wrap );
+      if (!$cx.is(':focus')) $cx.val( cx );
+      if (!$cy.is(':focus')) $cy.val( cy );
+      if (!$delay.is(':focus')) $delay.val( self.options.delay );
+      if (!$wrap.is(':focus')) $wrap.attr( 'checked', self.options.wrap );
     },
 
     nothing : null
