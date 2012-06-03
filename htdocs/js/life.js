@@ -17,13 +17,13 @@ var Life =
         {
           self.cx = arguments[0];
           self.cy = arguments[1];
-          self.grid = Life.clear( self.cx, self.cy );
+          self.grid = Life.empty( self.cx, self.cy );
         }
         return self;
       },
 
       clear : function() {
-        this.grid = Life.clear( this.cx, this.cy );
+        this.grid = Life.empty( this.cx, this.cy );
         return this;
       },
 
@@ -33,7 +33,7 @@ var Life =
       },
 
       resize : function( cx, cy ) {
-        var newgrid = Life.clear( cx, cy );
+        var newgrid = Life.empty( cx, cy );
         this.grid = Life.copy( this.grid, this.cx, this.cy, newgrid, cx, cy, 0, 0 );
         this.cx = cx;
         this.cy = cy;
@@ -73,9 +73,9 @@ var Life =
 
   // ----- Free functions ------
 
-  // Return a clear grid (fill with dead cells).
+  // Return a empty grid (fill with dead cells).
 
-  clear : function( cx, cy ) {
+  empty : function( cx, cy ) {
 
     var grid = [];
 
@@ -126,44 +126,16 @@ var Life =
     if (wrap == null)
       wrap = true;
 
-    var neighbors = [
-      [ -1, -1  ],
-      [  0, -1  ],
-      [  1, -1  ],
-      [ -1,  0  ],
-      [  1,  0  ],
-      [ -1,  1  ],
-      [  0,  1  ],
-      [  1,  1  ]
-    ];
-
-    var newgrid = Life.clear( cx, cy );
+    var newgrid = Life.empty( cx, cy );
 
     for (x=0; x<cx; x++)
     {
       for (y=0; y<cy; y++)
       {
-        var livecount = 0;
-
-        for (d=0; d<neighbors.length; d++)
-        {
-          var nx = x + neighbors[d][0];
-          var ny = y + neighbors[d][1];
-          if (wrap) {
-            if (nx < 0) nx += cx;
-            if (ny < 0) ny += cy;
-            nx = nx % cx;
-            ny = ny % cy;
-          }
-          if (nx < 0 || nx >= cx || ny < 0 || ny >= cy)
-            continue;
-          livecount += grid[nx][ny];
-        }
-
         // Game of Life Rules:
         //  http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Rules
 
-        switch (livecount)
+        switch (Life.neighbors( grid, cx, cy, wrap, x, y ))
         {
           // rule #1 : under-population (n < 2).
           case 0:
@@ -193,6 +165,37 @@ var Life =
     }
 
     return newgrid;
+  },
+
+
+  // Count the number of live neighbors around a cell.
+
+  neighbors : function( grid, cx, cy, wrap, x, y ) {
+
+    var count = 0;
+
+    for (dx=-1; dx<=1; dx++)
+    {
+      for (dy=-1; dy<=1; dy++)
+      {
+        var nx = x + dx;
+        var ny = y + dy;
+        if (wrap)
+        {
+          if (nx < 0) nx += cx;
+          if (ny < 0) ny += cy;
+          nx = nx % cx;
+          ny = ny % cy;
+        }
+        if (nx < 0 || nx >= cx || ny < 0 || ny >= cy)
+          continue;
+        count += grid[nx][ny];
+      }
+    }
+
+    count -= grid[x][y];
+
+    return count;
   },
 
 
