@@ -9,39 +9,35 @@ var Life =
       init : function() {
         var self = this;
 
+        // One argument: scan from string representation
+        // Two arguments: specify size for empty grid
+
         if (arguments.length == 1)
-        {
           self.scan( arguments[0] );
-        }
         else if (arguments.length == 2)
-        {
-          self.cx = arguments[0];
-          self.cy = arguments[1];
-          self.grid = Life.empty( self.cx, self.cy );
-        }
+          self.grid = Life.empty( arguments[0], arguments[1] );
+
         return self;
       },
 
       clear : function() {
-        this.grid = Life.empty( this.cx, this.cy );
+        this.grid = Life.empty( this.grid.cx, this.grid.cy );
         return this;
       },
 
       random : function() {
-        this.grid = Life.random( this.cx, this.cy );
+        this.grid = Life.random( this.grid.cx, this.grid.cy );
         return this;
       },
 
       resize : function( cx, cy ) {
         var newgrid = Life.empty( cx, cy );
-        this.grid = Life.copy( this.grid, this.cx, this.cy, newgrid, cx, cy, 0, 0 );
-        this.cx = cx;
-        this.cy = cy;
+        this.grid = Life.copy( this.grid, newgrid, 0, 0 );
         return this;
       },
 
       next : function( wrap ) {
-        this.grid = Life.next( this.grid, this.cx, this.cy, wrap );
+        this.grid = Life.next( this.grid, this.grid.cx, this.grid.cy, wrap );
         return this;
       },
 
@@ -51,15 +47,12 @@ var Life =
       },
 
       scan : function( s ) {
-        var o = Life.scan( s );
-        this.grid = o[0];
-        this.cx = o[1];
-        this.cy = o[2];
+        this.grid = Life.scan( s );
         return this;
       },
 
       format : function() {
-        return Life.format( this.grid, this.cx, this.cy );
+        return Life.format( this.grid, this.grid.cx, this.grid.cy );
       },
 
       nothing : null
@@ -86,6 +79,8 @@ var Life =
       }
     }
 
+    grid.cx = cx;
+    grid.cy = cy;
     return grid;
   },
 
@@ -103,17 +98,19 @@ var Life =
       }
     }
 
+    grid.cx = cx;
+    grid.cy = cy;
     return grid;
   },
 
 
   // Copy a grid onto another grid, with some offset.
 
-  copy : function( src, src_cx, src_cy, dst, dst_cx, dst_cy, dst_x, dst_y ) {
+  copy : function( src, dst, x, y ) {
 
-    for (x=0; x<src_cx && dst_x+x<dst_cx; x++)
-      for (y=0; y<src_cy && dst_y+y<dst_cy; y++)
-        dst[dst_x + x][dst_y + y] = src[x][y];
+    for (x=0; x<src.cx && dst.x+x<dst.cx; x++)
+      for (y=0; y<src.cy && dst_y+y<dst.cy; y++)
+        dst[dst.x + x][dst.y + y] = src[x][y];
 
     return dst;
   },
@@ -121,21 +118,21 @@ var Life =
 
   // Compute next iteration.
 
-  next : function( grid, cx, cy, wrap ) {
+  next : function( grid, wrap ) {
 
     if (wrap == null)
       wrap = true;
 
-    var newgrid = Life.empty( cx, cy );
+    var newgrid = Life.empty( grid.cx, grid.cy );
 
-    for (x=0; x<cx; x++)
+    for (x=0; x<grid.cx; x++)
     {
-      for (y=0; y<cy; y++)
+      for (y=0; y<grid.cy; y++)
       {
         // Game of Life Rules:
         //  http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Rules
 
-        switch (Life.neighbors( grid, cx, cy, wrap, x, y ))
+        switch (Life.neighbors( grid, wrap, x, y ))
         {
           // rule #1 : under-population (n < 2).
           case 0:
@@ -170,7 +167,7 @@ var Life =
 
   // Count the number of live neighbors around a cell.
 
-  neighbors : function( grid, cx, cy, wrap, x, y ) {
+  neighbors : function( grid, wrap, x, y ) {
 
     var count = 0;
 
@@ -182,12 +179,12 @@ var Life =
         var ny = y + dy;
         if (wrap)
         {
-          if (nx < 0) nx += cx;
-          if (ny < 0) ny += cy;
-          nx = nx % cx;
-          ny = ny % cy;
+          if (nx < 0) nx += grid.cx;
+          if (ny < 0) ny += grid.cy;
+          nx = nx % grid.cx;
+          ny = ny % grid.cy;
         }
-        if (nx < 0 || nx >= cx || ny < 0 || ny >= cy)
+        if (nx < 0 || nx >= grid.cx || ny < 0 || ny >= grid.cy)
           continue;
         count += grid[nx][ny];
       }
@@ -201,12 +198,12 @@ var Life =
 
   // Render grid to string.
 
-  format : function( grid, cx, cy ) {
+  format : function( grid ) {
     var s = '';
-    for (y=0; y<cy; y++) {
-      for (x=0; x<cx; x++)
+    for (y=0; y<grid.cy; y++) {
+      for (x=0; x<grid.cx; x++)
         s += grid[x][y] ? '*' : '.';
-      if (y<cy-1)
+      if (y<grid.cy-1)
         s += '\n';
     }
     return s;
@@ -229,7 +226,9 @@ var Life =
       for (y=0; y<cy; y++)
         grid[x][y] = (lines[y][x] == '*') ? 1 : 0;
     }
-    return [ grid, cx, cy ];
+    grid.cx = cx;
+    grid.cy = cy;
+    return grid;
   },
 
 

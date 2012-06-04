@@ -20,8 +20,10 @@ function LifeApp()
     {
       var self = this;
       self.options = $.extend( {}, self.defaults, options );
-      self.$elem = $elem;
       self.life = Life.life( self.options.cx, self.options.cy );
+      delete self.options.cx;
+      delete self.options.cy;
+      self.$elem = $elem;
       self.playing = 0;
       self.generation = 0;
       self.setup();
@@ -80,9 +82,9 @@ function LifeApp()
       // Resizing the grid
 
       $sizes.bind( 'change.life', function() {
-        self.options.cx = parseInt( $( $sizes[0] ).val() );
-        self.options.cy = parseInt( $( $sizes[1] ).val() );
-        self.life.resize( self.options.cx, self.options.cy );
+        var cx = parseInt( $( $sizes[0] ).val() );
+        var cy = parseInt( $( $sizes[1] ).val() );
+        self.life.resize( cx, cy );
         self.uninstall();
         self.setup();
         self.draw();
@@ -165,8 +167,8 @@ function LifeApp()
       var $grid = $( '.grid', self.$elem );
 
       var grid = self.life.grid;
-      var cx = self.options.cx;
-      var cy = self.options.cy;
+      var cx = grid.cx;
+      var cy = grid.cy;
       var html = '<ul>';
 
       for (y=0; y<cy; y++) {
@@ -195,8 +197,8 @@ function LifeApp()
       var $wrap = $( 'input[name="wrap"]', $controls );
 
       var grid = self.life.grid;
-      var cx = self.options.cx;
-      var cy = self.options.cy;
+      var cx = grid.cx;
+      var cy = grid.cy;
       var $rows = $( '.grid > ul > li', self.elem );
 
       for (y=0; y<cy; y++)
