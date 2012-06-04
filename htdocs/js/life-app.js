@@ -20,11 +20,11 @@ function LifeApp()
     {
       var self = this;
       self.options = $.extend( {}, self.defaults, options );
-      self.life = Life.life( self.options.cx, self.options.cy );
+      self.grid = Life.random( self.options.cx, self.options.cy );
       delete self.options.cx;
       delete self.options.cy;
       self.$elem = $elem;
-      self.playing = 0;
+      self.playing = 1;
       self.generation = 0;
       self.setup();
       self.draw();
@@ -61,7 +61,7 @@ function LifeApp()
 
       $reset.bind( 'click.life', function() {
         self.playing = 0;
-        self.life.clear();
+        self.grid = Life.empty( self.grid.cx, self.grid.cy );
         self.generation = 0;
         self.draw();
       } );
@@ -70,7 +70,7 @@ function LifeApp()
 
       $random.bind( 'click.life', function() {
         self.playing = 0;
-        self.life.random();
+        self.grid = Life.random( self.grid.cx, self.grid.cy );
         self.draw();
       } );
 
@@ -84,7 +84,7 @@ function LifeApp()
       $sizes.bind( 'change.life', function() {
         var cx = parseInt( $( $sizes[0] ).val() );
         var cy = parseInt( $( $sizes[1] ).val() );
-        self.life.resize( cx, cy );
+        self.grid = Life.resize( self.grid, cx, cy );
         self.uninstall();
         self.setup();
         self.draw();
@@ -142,7 +142,7 @@ function LifeApp()
       if (!self.playing)
         return;
       self.generation += 1;
-      self.life.next( self.options.wrap );
+      self.grid = Life.next( self.grid, self.options.wrap );
       self.draw();
     },
 
@@ -157,7 +157,7 @@ function LifeApp()
       var x = Math.floor( (ev.pageX - pos.left) / self.options.tile_cx );
       var y = Math.floor( (ev.pageY - pos.top) / self.options.tile_cy );
 
-      self.life.toggle(x,y);
+      Life.toggle(self.grid,x,y);
       self.draw();
     },
 
@@ -166,7 +166,7 @@ function LifeApp()
       var self = this;
       var $grid = $( '.grid', self.$elem );
 
-      var grid = self.life.grid;
+      var grid = self.grid;
       var cx = grid.cx;
       var cy = grid.cy;
       var html = '<ul>';
@@ -196,7 +196,7 @@ function LifeApp()
       var $delay = $( 'input[name="delay"]', $controls );
       var $wrap = $( 'input[name="wrap"]', $controls );
 
-      var grid = self.life.grid;
+      var grid = self.grid;
       var cx = grid.cx;
       var cy = grid.cy;
       var $rows = $( '.grid > ul > li', self.elem );

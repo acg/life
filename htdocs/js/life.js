@@ -1,71 +1,5 @@
 var Life = 
 {
-  // ----- Class -----
-
-  life : function()
-  {
-    var self = {    
-
-      init : function() {
-        var self = this;
-
-        // One argument: scan from string representation
-        // Two arguments: specify size for empty grid
-
-        if (arguments.length == 1)
-          self.scan( arguments[0] );
-        else if (arguments.length == 2)
-          self.grid = Life.empty( arguments[0], arguments[1] );
-
-        return self;
-      },
-
-      clear : function() {
-        this.grid = Life.empty( this.grid.cx, this.grid.cy );
-        return this;
-      },
-
-      random : function() {
-        this.grid = Life.random( this.grid.cx, this.grid.cy );
-        return this;
-      },
-
-      resize : function( cx, cy ) {
-        var newgrid = Life.empty( cx, cy );
-        this.grid = Life.copy( this.grid, newgrid, 0, 0 );
-        return this;
-      },
-
-      next : function( wrap ) {
-        this.grid = Life.next( this.grid, this.grid.cx, this.grid.cy, wrap );
-        return this;
-      },
-
-      toggle : function( x, y ) {
-        this.grid[x][y] ^= 1;
-        return this;
-      },
-
-      scan : function( s ) {
-        this.grid = Life.scan( s );
-        return this;
-      },
-
-      format : function() {
-        return Life.format( this.grid, this.grid.cx, this.grid.cy );
-      },
-
-      nothing : null
-
-    };
-    
-    return self.init.apply( self, arguments );
-
-  },
-
-
-  // ----- Free functions ------
-
   // Return a empty grid (fill with dead cells).
 
   empty : function( cx, cy ) {
@@ -106,13 +40,20 @@ var Life =
 
   // Copy a grid onto another grid, with some offset.
 
-  copy : function( src, dst, x, y ) {
+  copy : function( src, dst, ox, oy ) {
 
-    for (x=0; x<src.cx && dst.x+x<dst.cx; x++)
-      for (y=0; y<src.cy && dst_y+y<dst.cy; y++)
-        dst[dst.x + x][dst.y + y] = src[x][y];
+    for (x=0; x<src.cx && x+ox<dst.cx; x++)
+      for (y=0; y<src.cy && y+oy<dst.cy; y++)
+        dst[ox + x][oy + y] = src[x][y];
 
     return dst;
+  },
+
+
+  // Return a new resized version of a grid.
+
+  resize : function( grid, cx, cy ) {
+    return Life.copy( grid, Life.empty( cx, cy ), 0, 0 );
   },
 
 
@@ -193,6 +134,14 @@ var Life =
     count -= grid[x][y];
 
     return count;
+  },
+
+
+  // Toggle a cell in a grid.
+
+  toggle : function( grid, x, y ) {
+    grid[x][y] ^= 1;
+    return grid;
   },
 
 
